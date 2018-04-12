@@ -44,6 +44,7 @@ After the maintenance period, LSPs are reverted back to optimal paths.
 - Configure appformix for network devices monitoring
 - Install northstar (version 4 or above)
 - Add the same network devices to northstar 
+- Install SaltStack
 
 # How to use this content: 
 
