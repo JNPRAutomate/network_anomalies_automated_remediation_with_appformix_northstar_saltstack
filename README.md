@@ -48,7 +48,7 @@
 - Add the same network devices to northstar 
 - Install SaltStack
 
-# How to use this content: 
+# How to run the demo: 
 
 ## Appformix  
 
@@ -250,7 +250,7 @@ Then log in to the Northstar GUI and verify in the ```topology``` menu if the de
 
 
 
-## How to run the demo: 
+## Run the demo: 
 
 ### Create Appformix webhook notifications.  
 
