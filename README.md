@@ -82,9 +82,9 @@ ext_pillar:
 ```
 
 So: 
-    - the Salt master is listening webhooks on port 5001. It generates equivalents ZMQ messages to the event bus
-    - runners are in the directory ```/srv/runners``` on the Salt master
-    - pillars (humans defined variables) are in the gitlab repository ```nora_ops/network_parameters``` (root/password, master branch)
+- the Salt master is listening webhooks on port 5001. It generates equivalents ZMQ messages to the event bus
+- runners are in the directory ```/srv/runners``` on the Salt master
+- pillars (humans defined variables) are in the gitlab repository ```nora_ops/network_parameters``` 
 
 ## Update the Salt external pillars
 
