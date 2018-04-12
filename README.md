@@ -15,10 +15,10 @@
 
 # webhooks overview: 
 
-- A webhook is notification using an HTTP POST. A webhook is sent by a system A to push data (json body as example) to a system B when an event occurred in the system A. Then the system B will decide what to do with these details. Usage is event driven automation.
+- A webhook is notification using an HTTP POST. A webhook is sent by a system A to push data (json body as example) to a system B when an event occurred in the system A. Then the system B will decide what to do with these details.  
 - Appformix supports webhooks. A notification is generated when the condition of an alarm is observed. You can configure an alarm to post notifications to an external HTTP endpoint. AppFormix will post a JSON payload to the endpoint for each notification.
 - SaltStack can listens to webhooks and generate equivalents ZMQ messages to the event bus  
-- SaltStack can reacts to webhooks (Event driven automation)  
+- SaltStack can reacts to webhooks 
 
 # Building blocks role: 
 
@@ -250,7 +250,7 @@ Then log in to the Northstar GUI and verify in the ```topology``` menu if the de
 
 
 
-## Run the event driven automation demo: 
+## How to run the demo: 
 
 ### Create Appformix webhook notifications.  
 
