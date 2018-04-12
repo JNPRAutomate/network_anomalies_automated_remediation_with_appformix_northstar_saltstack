@@ -4,14 +4,14 @@ Based on Appformix webhook notifications to Salt master, automatically make REST
 The "faulty" device will be considered logically down for a certain amount time, and the SDN controller will reroute the LSPs around this device during the maintenance period.  
 After the maintenance period, LSPs are reverted back to optimal paths. 
 
-# Building blocks: 
+# Demo building blocks: 
 
 - Juniper devices
 - Northstar SDN controller. Version 4 or above is required
 - Appformix
 - SaltStack
 
-# webhooks Overview: 
+# webhooks overview: 
 
 - A webhook is notification using an HTTP POST. A webhook is sent by a system A to push data (json body as example) to a system B when an event occurred in the system A. Then the system B will decide what to do with these details. Usage is event driven automation.
 - Appformix supports webhooks. A notification is generated when the condition of an alarm is observed. You can configure an alarm to post notifications to an external HTTP endpoint. AppFormix will post a JSON payload to the endpoint for each notification.
@@ -21,18 +21,22 @@ After the maintenance period, LSPs are reverted back to optimal paths.
 # Building blocks role: 
 
 ## Appformix:  
-- It collects data from Junos devices.
-- it generates webhooks notifications (HTTP POST with a JSON body) to SaltStack when the condition of an alarm is observed. The JSON body provides the device name and other details. 
+- Collects data from Junos devices.
+- Generates webhooks notifications (HTTP POST with a JSON body) to SaltStack when the condition of an alarm is observed. The JSON body provides the device name and other details. 
 
 ## SaltStack: 
 - Only the master is required.   
-- it listens to webhooks 
-- it generates a ZMQ messages to the event bus when a webhook notification is received. The ZMQ message has a tag and data. The data structure is a dictionary, which contains information about the event.
-- the reactor binds sls files to event tags. The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run. So these sls files define the SaltStack reactions. 
-- the sls file used in this content does the following: it parses the data from the ZMQ message and extracts the network device name. it then passes the data extracted the ZMQ message to a runner and execute the runner. The runner makes REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode. 
+- Listens to webhooks 
+- Generates a ZMQ messages to the event bus when a webhook notification is received. The ZMQ message has a tag and data. The data structure is a dictionary, which contains information about the event.
+- The reactor binds sls files to event tags. The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run. So these sls files define the SaltStack reactions. 
+- The reactor sls file used in this content does the following: 
+    - It parses the data from the ZMQ message and extracts the network device name. 
+    - It then passes the data extracted the ZMQ message to a runner and execute the runner. The runner makes REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode. 
 
 ## Northstar: 
-- Handle the REST calls received by SaltStack, i.e put the "faulty" device in maintenance mode. The "faulty" device will be considered logically down for a certain amount time, and Northstar will reroute the LSPs around this device during the maintenance period. After the maintenance period, LSPs are reverted back to optimal paths. 
+- Handle the REST calls received by SaltStack, i.e put the "faulty" device in maintenance mode. 
+    - The "faulty" device will be considered logically down for a certain amount time, and Northstar will reroute the LSPs around this device during the maintenance period. 
+    - After the maintenance period, LSPs are reverted back to optimal paths. 
 
 # Requirements: 
 
@@ -60,12 +64,12 @@ This is not covered by this documentation
 
 ## Configure the Salt master configuration file
 
-ssh to the Salt master and open the salt master configuration file:  
+ssh to the Salt master and edit the salt master configuration file:  
 ```
-more /etc/salt/master
+vi /etc/salt/master
 ```
 
-make sure the master configuration file has these details:  
+Make sure the master configuration file has these details:  
 ```
 runner_dirs:
   - /srv/runners
@@ -88,7 +92,7 @@ So:
 
 ## Update the Salt external pillars
 
-Create a file ```northstar.sls``` at the root of the  external pillars gitlab repository (```nora_ops/network_parameters```) with this content: 
+Create a file ```northstar.sls``` at the root of the  external pillars gitlab repository ```nora_ops/network_parameters``` with this content: 
 ```
 northstar: 
     authuser: 'admin'
@@ -100,8 +104,8 @@ northstar:
 The runner that SaltStack will execute to make REST calls to northstar will use these variables.  
 
 
-For the ```northstar.sls``` file to be actually used, update the ```top.sls``` file at the root of the gitlab repository ```nora_ops/network_parameters``` with this content: 
-
+For the ```northstar.sls``` file to be actually used, update the ```top.sls``` file at the root of the gitlab repository ```nora_ops/network_parameters```.  
+Example:  
 ```
 {% set id = salt['grains.get']('id') %} 
 {% set host = salt['grains.get']('host') %} 
@@ -119,9 +123,11 @@ base:
 
 
 ## Update the Salt reactor
-The reactor binds sls files to event tags. The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run. So these sls files define the SaltStack reactions.  
-Update the reactor.  
-This reactor binds ```salt/engines/hook/appformix_to_saltstack``` to ```/srv/reactor/northstar_maintenance.sls``` 
+
+The reactor binds sls files to event tags.  
+The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run.  
+So these sls files define the SaltStack reactions.  
+This reactor binds ```salt/engines/hook/appformix_to_saltstack``` event to this file ```/srv/reactor/northstar_maintenance.sls``` 
 
 ```
 # more /etc/salt/master.d/reactor.conf
@@ -154,8 +160,8 @@ suffix:
 
 ## Create the reactor sls file 
 
-The sls reactor file ```/srv/reactor/northstar_maintenance.sls``` parses the data from the ZMQ message that has the tags ```salt/engines/hook/appformix_to_saltstack``` and extracts the network device name.  
-It then passes the data extracted the ZMQ message to the python function ```put_device_in_maintenance``` of the ```northstar``` runner and execute the python function. 
+- The sls reactor file ```/srv/reactor/northstar_maintenance.sls``` parses the data from the ZMQ message that has the tags ```salt/engines/hook/appformix_to_saltstack``` and extracts the network device name.  
+- It then passes the data extracted the ZMQ message to the python function ```put_device_in_maintenance``` of the ```northstar``` runner and execute the python function. 
 
 ```
 # more /srv/reactor/northstar_maintenance.sls
@@ -168,13 +174,15 @@ test_event:
 ```
 
 ## Create the Salt runner
-As you can see in the Salt master configuration file ```/etc/salt/master```, the runners directory is ```/srv/runners/``` 
+
+As you can see in the Salt master configuration file ```/etc/salt/master```, the runners directory is ```/srv/runners/```.   
 So the runner ```northstar``` is ```/srv/runners/northstar.py```  
 
-This runner defines a python function ```put_device_in_maintenance```
+This runner defines a python function ```put_device_in_maintenance```.  
 The python function makes REST calls to Northstar SDN controller to put a device in maintenance mode.  
 
-The device will be considered logically down for a certain amount time, and the SDN controller will reroute the LSPs around this device during the maintenance period. After the maintenance period, LSPs are reverted back to optimal paths. 
+The device will be considered logically down for a certain amount time, and the SDN controller will reroute the LSPs around this device during the maintenance period.  
+After the maintenance period, LSPs are reverted back to optimal paths. 
 
 ```
 # more /srv/runners/northstar.py
@@ -231,39 +239,42 @@ salt-run northstar.put_device_in_maintenance dev=core-rtr-p-02
 
 Then log in to the Northstar GUI and verify in the ```topology``` menu if the device ```core-rtr-p-02``` is in maintenance. 
 
-screenshot
 
 
 ## Run the event driven automation demo: 
 
 ### Create Appformix webhook notifications.  
 
-You can do it from Appformix GUI, settings, Notification Settings, Notification Services, add service.    
-Then:  
-service name: provide the name appformix_to_saltstack  
-URL endpoint: provide the Salt master IP and Salt webhook listerner port (```HTTP://192.168.128.174:5001/appformix_to_saltstack``` as example).  
-setup  
+You can do it from Appformix GUI. Select:  
+- settings
+- Notification Settings
+- Notification Services
+- add service.    
+    - service name: provide the name appformix_to_saltstack  
+    - URL endpoint: provide the Salt master IP and Salt webhook listerner port (```HTTP://192.168.128.174:5001/appformix_to_saltstack``` as example).  
+    - setup  
 
 
 ### Create Appformix alarms, and map these alarms to the webhook you just created.
 
-You can do it from the Appformix GUI, Alarms, add rule.  
-Then, as example:   
-Name: use in_unicast_packets_core-rtr-p-02,  
-Module: select Alarms,  
-Alarm rule type: select Static,  
-scope: select network devices,  
-network device/Aggregate: select core-rtr-p-02,  
-generate: select generate alert,  
-For metric: select interface_in_unicast_packets,  
-When: select Average,  
-Interval(seconds): use 60,  
-Is: select Above,  
-Threshold(Packets/s): use 300,  
-Severity: select Warning,  
-notification: select custom service,  
-services: select the service name you created (appformix_to_saltstack),  
-save.
+You can do it from the Appformix GUI. Select:   
+- Alarms
+- add rule
+    - Name: use in_unicast_packets_core-rtr-p-02,  
+    - Module: select Alarms,  
+    - Alarm rule type: select Static,  
+    - scope: select network devices,  
+    - network device/Aggregate: select core-rtr-p-02,  
+    - generate: select generate alert,  
+    - For metric: select interface_in_unicast_packets,  
+    - When: select Average,  
+    - Interval(seconds): use 60,  
+    - Is: select Above,  
+    - Threshold(Packets/s): use 300,  
+    - Severity: select Warning,  
+    - notification: select custom service,  
+    - services: select the service name you created (appformix_to_saltstack), 
+    - save.
 
 ### Watch webhook notifications and ZMQ messages  
 
@@ -279,7 +290,7 @@ Salt provides a runner that displays events in real-time as they are received on
 
 ### Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
 ```
-salt "core-rtr-p-02" junos.rpc 'ping' rapid=True
+# salt "core-rtr-p-02" junos.rpc 'ping' rapid=True
 ```
 ### Verify on SaltStack 
 
