@@ -48,7 +48,7 @@
 - Add the same network devices to northstar 
 - Install SaltStack
 
-# How to run the demo: 
+# Prepare the demo: 
 
 ## Appformix  
 
@@ -250,9 +250,9 @@ Then log in to the Northstar GUI and verify in the ```topology``` menu if the de
 
 
 
-## Run the demo: 
+# Run the demo: 
 
-### Create Appformix webhook notifications.  
+## Create Appformix webhook notifications.  
 
 You can do it from Appformix GUI. Select:  
 - settings
@@ -264,7 +264,7 @@ You can do it from Appformix GUI. Select:
     - setup  
 
 
-### Create Appformix alarms, and map these alarms to the webhook you just created.
+## Create Appformix alarms, and map these alarms to the webhook you just created.
 
 You can do it from the Appformix GUI. Select:   
 - Alarms
@@ -285,7 +285,7 @@ You can do it from the Appformix GUI. Select:
     - services: select the service name you created (appformix_to_saltstack), 
     - save.
 
-### Watch webhook notifications and ZMQ messages  
+## Watch webhook notifications and ZMQ messages  
 
 Run this command on the master to see webhook notifications:
 ```
@@ -297,13 +297,13 @@ Salt provides a runner that displays events in real-time as they are received on
 # salt-run state.event pretty=True
 ```
 
-### Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
+## Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
 
 If you have a Salt proxy for a junos device, you can leverage it:   
 ```
 # salt "core-rtr-p-02" junos.rpc 'ping' rapid=True
 ```
-### Verify on SaltStack 
+## Verify on SaltStack 
 
 Have a look at the tcpdump output 
 
@@ -352,7 +352,7 @@ salt/run/20180406164340760297/ret       {
     "user": "Reactor"
 }
 ```
-### Verify on Northstar 
+## Verify on Northstar 
 
 Then log in to the Northstar GUI and verify in the topology menu if the device core-rtr-p-02 is in maintenance. 
 
