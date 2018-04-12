@@ -1,10 +1,14 @@
 # Demo overview:  
 
 - Appformix is used for network devices monitoring (SNMP and telemetry).  
+![appformix_network_devices_monitoring.png](resources/appformix_network_devices_monitoring.png)  
+
 - Based on Appformix webhook notifications to Salt master, automatically make REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode.  
     - The "faulty" device will be considered logically down for a certain amount time, and the SDN controller will reroute the
     LSPs around this device during the maintenance period.  
     - After the maintenance period, LSPs are reverted back to optimal paths. 
+![Northstar_maintenance.png](resources/Northstar_maintenance.png)  
+
 
 # Demo building blocks: 
 
