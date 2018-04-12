@@ -48,22 +48,28 @@ After the maintenance period, LSPs are reverted back to optimal paths.
 
 # How to use this content: 
 
-## Install Appformix  
+## Appformix  
+
+### Install Appformix. 
 This is not covered by this documentation
 
-## Configure Appformix for network devices monitoring  
+### Configure Appformix for network devices monitoring 
 This is not covered by this documentation
 
-## Install Northstar (version 4 or above)  
+## Northstar 
+
+### Install Northstar (version 4 or above)  
 This is not covered by this documentation
 
-## Add the same network devices to Northstar  
+### Add the same network devices to Northstar  
 This is not covered by this documentation
 
-## Install SaltStack
+## SaltStack
+
+### Install SaltStack
 This is not covered by this documentation
 
-## Configure the Salt master configuration file
+### Configure the Salt master configuration file
 
 ssh to the Salt master and edit the salt master configuration file:  
 ```
@@ -91,7 +97,7 @@ So:
 - runners are in the directory ```/srv/runners``` on the Salt master
 - pillars (humans defined variables) are in the gitlab repository ```nora_ops/network_parameters``` 
 
-## Update the Salt external pillars
+### Update the Salt external pillars
 
 Create a file ```northstar.sls``` at the root of the  external pillars gitlab repository ```nora_ops/network_parameters``` with this content: 
 ```
@@ -123,7 +129,7 @@ base:
 ```
 
 
-## Update the Salt reactor
+### Update the Salt reactor
 
 The reactor binds sls files to event tags.  
 The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run.  
@@ -159,7 +165,7 @@ suffix:
       - /srv/reactor/northstar_maintenance.sls
 ```
 
-## Create the reactor sls file 
+### Create the reactor sls file 
 
 - The sls reactor file ```/srv/reactor/northstar_maintenance.sls``` parses the data from the ZMQ message that has the tags ```salt/engines/hook/appformix_to_saltstack``` and extracts the network device name.  
 - It then passes the data extracted the ZMQ message to the python function ```put_device_in_maintenance``` of the ```northstar``` runner and execute the python function. 
@@ -174,7 +180,7 @@ test_event:
        - dev: {{ devicename }}
 ```
 
-## Create the Salt runner
+### Create the Salt runner
 
 As you can see in the Salt master configuration file ```/etc/salt/master```, the runners directory is ```/srv/runners/```.   
 So the runner ```northstar``` is ```/srv/runners/northstar.py```  
