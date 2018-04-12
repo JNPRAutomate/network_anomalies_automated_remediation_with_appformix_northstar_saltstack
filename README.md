@@ -5,6 +5,7 @@
     - The "faulty" device will be considered logically down for a certain amount time, and the SDN controller will reroute the
     LSPs around this device during the maintenance period.  
     - After the maintenance period, LSPs are reverted back to optimal paths. 
+    
 ![unplanned-maintenance-operations.png](resources/unplanned-maintenance-operations.png)  
 
 
