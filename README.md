@@ -1,62 +1,61 @@
-
-#### Overview:  
+# Overview:  
 Appformix is used for network devices monitoring. Based on Appformix webhook notifications to Salt master, automatically make REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode. The "faulty" device will be considered logically down for a certain amount time, and the SDN controller will reroute the LSPs around this device during the maintenance period. After the maintenance period, LSPs are reverted back to optimal paths. 
 
-#### Building blocks: 
+# Building blocks: 
 
 - Juniper devices
 - Northstar SDN controller. Version 4 or above is required
 - Appformix
 - SaltStack based
 
-#### webhooks Overview: 
+# webhooks Overview: 
 
 - A webhook is notification using an HTTP POST. A webhook is sent by a system A to push data (json body as example) to a system B when an event occurred in the system A. Then the system B will decide what to do with these details. Usage is event driven automation.
 - Appformix supports webhooks. A notification is generated when the condition of an alarm is observed. You can configure an alarm to post notifications to an external HTTP endpoint. AppFormix will post a JSON payload to the endpoint for each notification.
 - SaltStack can listens to webhooks and generate equivalents ZMQ messages to the event bus  
 - SaltStack can reacts to webhooks (Event driven automation)  
 
-#### Building blocks role: 
+# Building blocks role: 
 
-- Appformix:  
-    - it collects data from Junos devices.
-    - it generates webhooks notifications (HTTP POST with a JSON body) to SaltStack when the condition of an alarm is observed. The JSON body provides the device name and other details. 
+## Appformix:  
+- It collects data from Junos devices.
+- it generates webhooks notifications (HTTP POST with a JSON body) to SaltStack when the condition of an alarm is observed. The JSON body provides the device name and other details. 
 
-- SaltStack: 
-    - Only the master is required.   
-    - it listens to webhooks 
-    - it generates a ZMQ messages to the event bus when a webhook notification is received. The ZMQ message has a tag and data. The data structure is a dictionary, which contains information about the event.
-    - the reactor binds sls files to event tags. The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run. So these sls files define the SaltStack reactions. 
-    - the sls file used in this content does the following: it parses the data from the ZMQ message and extracts the network device name. it then passes the data extracted the ZMQ message to a runner and execute the runner. The runner makes REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode. 
+## SaltStack: 
+- Only the master is required.   
+- it listens to webhooks 
+- it generates a ZMQ messages to the event bus when a webhook notification is received. The ZMQ message has a tag and data. The data structure is a dictionary, which contains information about the event.
+- the reactor binds sls files to event tags. The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run. So these sls files define the SaltStack reactions. 
+- the sls file used in this content does the following: it parses the data from the ZMQ message and extracts the network device name. it then passes the data extracted the ZMQ message to a runner and execute the runner. The runner makes REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode. 
 
-- Northstar: 
-    - Handle the REST calls received by SaltStack, i.e put the "faulty" device in maintenance mode. The "faulty" device will be considered logically down for a certain amount time, and Northstar will reroute the LSPs around this device during the maintenance period. After the maintenance period, LSPs are reverted back to optimal paths. 
+## Northstar: 
+- Handle the REST calls received by SaltStack, i.e put the "faulty" device in maintenance mode. The "faulty" device will be considered logically down for a certain amount time, and Northstar will reroute the LSPs around this device during the maintenance period. After the maintenance period, LSPs are reverted back to optimal paths. 
 
-#### Requirements: 
+# Requirements: 
 
 - Install appformix
 - Configure appformix for network devices monitoring
 - Install northstar (version 4 or above)
 - Add the same network devices to northstar 
 
-#### How to use this content: 
+# How to use this content: 
 
-##### Install Appformix  
+## Install Appformix  
 This is not covered by this documentation
 
-##### Configure Appformix for network devices monitoring  
+## Configure Appformix for network devices monitoring  
 This is not covered by this documentation
 
-##### Install Northstar (version 4 or above)  
+## Install Northstar (version 4 or above)  
 This is not covered by this documentation
 
-##### Add the same network devices to Northstar  
+## Add the same network devices to Northstar  
 This is not covered by this documentation
 
-##### Install SaltStack
+## Install SaltStack
 This is not covered by this documentation
 
-##### Configure the Salt master configuration file
+## Configure the Salt master configuration file
 
 ssh to the Salt master and open the salt master configuration file:  
 ```
@@ -84,8 +83,7 @@ So:
     - runners are in the directory ```/srv/runners``` on the Salt master
     - pillars (humans defined variables) are in the gitlab repository ```nora_ops/network_parameters``` (root/password, master branch)
 
-
-##### Update the Salt external pillars
+## Update the Salt external pillars
 
 Create a file ```northstar.sls``` at the root of the  external pillars gitlab repository (```nora_ops/network_parameters```) with this content: 
 ```
@@ -98,7 +96,6 @@ northstar:
 ```
 The runner that SaltStack will execute to make REST calls to northstar will use these variables.  
 
-screenshot
 
 For the ```northstar.sls``` file to be actually used, update the ```top.sls``` file at the root of the gitlab repository ```nora_ops/network_parameters``` with this content: 
 
@@ -117,9 +114,8 @@ base:
 {% endif %}
 ```
 
-screenshot
 
-##### Update the Salt reactor
+## Update the Salt reactor
 The reactor binds sls files to event tags. The reactor has a list of event tags to be matched, and each event tag has a list of reactor SLS files to be run. So these sls files define the SaltStack reactions.  
 Update the reactor.  
 This reactor binds ```salt/engines/hook/appformix_to_saltstack``` to ```/srv/reactor/northstar_maintenance.sls``` 
@@ -153,7 +149,7 @@ suffix:
       - /srv/reactor/northstar_maintenance.sls
 ```
 
-##### Create the reactor sls file 
+## Create the reactor sls file 
 
 The sls reactor file ```/srv/reactor/northstar_maintenance.sls``` parses the data from the ZMQ message that has the tags ```salt/engines/hook/appformix_to_saltstack``` and extracts the network device name.  
 It then passes the data extracted the ZMQ message to the python function ```put_device_in_maintenance``` of the ```northstar``` runner and execute the python function. 
@@ -168,7 +164,7 @@ test_event:
        - dev: {{ devicename }}
 ```
 
-##### Create the Salt runner
+## Create the Salt runner
 As you can see in the Salt master configuration file ```/etc/salt/master```, the runners directory is ```/srv/runners/``` 
 So the runner ```northstar``` is ```/srv/runners/northstar.py```  
 
@@ -235,9 +231,9 @@ Then log in to the Northstar GUI and verify in the ```topology``` menu if the de
 screenshot
 
 
-##### Run the event driven northstar automation demo: 
+## Run the event driven automation demo: 
 
-- Create Appformix webhook notifications.  
+### Create Appformix webhook notifications.  
 
 You can do it from Appformix GUI, settings, Notification Settings, Notification Services, add service.    
 Then:  
@@ -245,9 +241,8 @@ service name: provide the name appformix_to_saltstack
 URL endpoint: provide the Salt master IP and Salt webhook listerner port (```HTTP://192.168.128.174:5001/appformix_to_saltstack``` as example).  
 setup  
 
-screenshot
 
-- Create Appformix alarms, and map these alarms to the webhook you just created.
+### Create Appformix alarms, and map these alarms to the webhook you just created.
 
 You can do it from the Appformix GUI, Alarms, add rule.  
 Then, as example:   
@@ -267,7 +262,7 @@ notification: select custom service,
 services: select the service name you created (appformix_to_saltstack),  
 save.
 
-- Watch webhook notifications and ZMQ messages  
+### Watch webhook notifications and ZMQ messages  
 
 Run this command on the master to see webhook notifications:
 ```
@@ -279,11 +274,11 @@ Salt provides a runner that displays events in real-time as they are received on
 # salt-run state.event pretty=True
 ```
 
-- Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
+### Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
 ```
 salt "core-rtr-p-02" junos.rpc 'ping' rapid=True
 ```
-- Verify on SaltStack 
+### Verify on SaltStack 
 
 Have a look at the tcpdump output 
 
@@ -332,9 +327,7 @@ salt/run/20180406164340760297/ret       {
     "user": "Reactor"
 }
 ```
-- Verify on Northstar 
+### Verify on Northstar 
 
 Then log in to the Northstar GUI and verify in the topology menu if the device core-rtr-p-02 is in maintenance. 
-
-screenshot
 
