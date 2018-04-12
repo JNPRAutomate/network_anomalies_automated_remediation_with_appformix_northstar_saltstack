@@ -94,17 +94,17 @@ engines:
 ```
 ext_pillar:
   - git:
-    - master git@gitlab:nora_ops/network_parameters.git
+    - master git@gitlab:organization/network_parameters.git
 ```
 
 So: 
 - the Salt master is listening webhooks on port 5001. It generates equivalents ZMQ messages to the event bus
 - runners are in the directory ```/srv/runners``` on the Salt master
-- pillars (humans defined variables) are in the gitlab repository ```nora_ops/network_parameters``` 
+- pillars (humans defined variables) are in the gitlab repository ```organization/network_parameters``` 
 
 ### Update the Salt external pillars
 
-Create a file ```northstar.sls``` at the root of the  external pillars gitlab repository ```nora_ops/network_parameters``` with this content: 
+Create a file ```northstar.sls``` at the root of the  external pillars gitlab repository ```organization/network_parameters``` with this content: 
 ```
 northstar: 
     authuser: 'admin'
@@ -116,7 +116,7 @@ northstar:
 The runner that SaltStack will execute to make REST calls to northstar will use these variables.  
 
 
-For the ```northstar.sls``` file to be actually used, update the ```top.sls``` file at the root of the gitlab repository ```nora_ops/network_parameters```.  
+For the ```northstar.sls``` file to be actually used, update the ```top.sls``` file at the root of the gitlab repository ```organization/network_parameters```.  
 Example:  
 ```
 {% set id = salt['grains.get']('id') %} 
