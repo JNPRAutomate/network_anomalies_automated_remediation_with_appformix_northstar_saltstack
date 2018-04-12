@@ -1,7 +1,8 @@
 # Demo overview:  
 
 - Appformix is used for network devices monitoring (SNMP and telemetry).  
-- Based on Appformix webhook notifications to Salt master, automatically make REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode.  
+- Appformix send webhook notifications to Salt master 
+- SaltStack automatically makes REST calls to Northstar SDN controller to put the "faulty" device in maintenance mode.  
     - The "faulty" device will be considered logically down for a certain amount time, and the SDN controller will reroute the
     LSPs around this device during the maintenance period.  
     - After the maintenance period, LSPs are reverted back to optimal paths. 
@@ -262,7 +263,7 @@ You can do it from Appformix GUI. Select:
 - Notification Settings
 - Notification Services
 - add service.    
-    - service name: provide the name appformix_to_saltstack  
+    - service name: appformix_to_saltstack  
     - URL endpoint: provide the Salt master IP and Salt webhook listerner port (```HTTP://192.168.128.174:5001/appformix_to_saltstack``` as example).  
     - setup  
 
@@ -272,20 +273,20 @@ You can do it from Appformix GUI. Select:
 You can do it from the Appformix GUI. Select:   
 - Alarms
 - add rule
-    - Name: use in_unicast_packets_core-rtr-p-02,  
-    - Module: select Alarms,  
-    - Alarm rule type: select Static,  
-    - scope: select network devices,  
-    - network device/Aggregate: select core-rtr-p-02,  
-    - generate: select generate alert,  
-    - For metric: select interface_in_unicast_packets,  
-    - When: select Average,  
-    - Interval(seconds): use 60,  
+    - Name: in_unicast_packets_core-rtr-p-02,  
+    - Module: Alarms,  
+    - Alarm rule type: Static,  
+    - scope: network devices,  
+    - network device/Aggregate: core-rtr-p-02,  
+    - generate: generate alert,  
+    - For metric: interface_in_unicast_packets,  
+    - When: Average,  
+    - Interval(seconds): 60,  
     - Is: select Above,  
-    - Threshold(Packets/s): use 300,  
-    - Severity: select Warning,  
-    - notification: select custom service,  
-    - services: select the service name you created (appformix_to_saltstack), 
+    - Threshold(Packets/s): 300,  
+    - Severity: Warning,  
+    - notification: custom service,  
+    - services: appformix_to_saltstack, 
     - save.
 
 ## Watch webhook notifications and ZMQ messages  
