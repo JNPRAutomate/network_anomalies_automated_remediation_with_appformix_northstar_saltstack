@@ -83,6 +83,8 @@ vi configure_appformix/network_devices.yml
 Execute the python script [**network_devices.py**](configure_appformix/network_devices.py). It renders the template [**network_devices.j2**](configure_appformix/network_devices.j2) using the variables [**network_devices.yml**](configure_appformix/network_devices.yml). The rendered file is [**network_devices.json**](configure_appformix/network_devices.json).  
 ```
 python configure_appformix/network_devices.py
+```
+```
 more configure_appformix/network_devices.json
 ```
 
@@ -176,7 +178,7 @@ The python script [**telemetry.py**](configure_junos/telemetry.py) renders the t
 more configure_appformix/network_devices.yml
 ```
 ```
-configure_junos/telemetry.py
+python configure_junos/telemetry.py
 configured device 172.30.52.155 with telemetry server ip 192.168.1.100
 configured device 172.30.52.156 with telemetry server ip 192.168.1.100
 ```
