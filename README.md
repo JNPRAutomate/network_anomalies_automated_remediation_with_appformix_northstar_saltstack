@@ -477,6 +477,40 @@ Salt provides a runner that displays events in real-time as they are received on
 
 ## Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
 
+Either you DIY, or, depending on the alarms you set, you can use one the automation content available in the directory [trigger_alarms](trigger_alarms).  
+Here's how to use the automation content available in the directory [trigger_alarms](trigger_alarms).  
+
+### generate traffic between 2 routers 
+Add the file [generate_traffic.sls](trigger_alarms/generate_traffic.sls) to the directory ```junos``` of the gitlab repository ```organization/network_model``` (```gitfs_remotes```).  
+
+And run this command on the master:   
+```
+# salt "core-rtr-p-02" state.apply junos.generate_traffic
+```
+### Change interface speed on a router
+
+Add the file [change_int_speed.sls](trigger_alarms/change_int_speed.sls) to the directory ```junos``` of the gitlab repository ```organization/network_model``` (```gitfs_remotes```).  
+Add the file [speed.set](trigger_alarms/speed.set) to the directory ```template``` of the gitlab repository ```organization/network_model``` (```gitfs_remotes```).    
+Run this command on the master:   
+```
+# salt "core-rtr-p-02" state.apply junos.change_int_speed
+# salt "core-rtr-p-02" junos.cli "show system commit"
+# salt "core-rtr-p-02" junos.cli "show configuration | compare rollback 1"
+# salt "core-rtr-p-02" junos.cli "show configuration interfaces ge-0/0/1"
+```
+
+### Change MTU on a router
+
+Add the file [change_mtu.sls](trigger_alarms/change_mtu.sls) to the directory ```junos``` of the gitlab repository ```organization/network_model``` (```gitfs_remotes```).  
+Add the file [mtu.set](trigger_alarms/mtu.set) to the directory ```template``` of the gitlab repository ```organization/network_model``` (```gitfs_remotes```).    
+Run this command on the master:   
+```
+# salt "core-rtr-p-02" state.apply junos.change_mtu
+# salt "core-rtr-p-02" junos.cli "show system commit"
+# salt "core-rtr-p-02" junos.cli "show configuration | compare rollback 1"
+# salt "core-rtr-p-02" junos.cli "show configuration interfaces ge-0/0/1"
+```
+
 ## Verify on SaltStack 
 
 Have a look at the tcpdump output 
