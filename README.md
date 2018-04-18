@@ -477,10 +477,6 @@ Salt provides a runner that displays events in real-time as they are received on
 
 ## Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
 
-If you have a Salt proxy for a junos device, you can leverage it:   
-```
-# salt "core-rtr-p-02" junos.rpc 'ping' rapid=True
-```
 ## Verify on SaltStack 
 
 Have a look at the tcpdump output 
