@@ -478,7 +478,10 @@ Salt provides a runner that displays events in real-time as they are received on
 ## Trigger an alarm  to get a webhook notification sent by Appformix to SaltStack 
 
 Either you DIY, or, depending on the alarms you set, you can use one the automation content available in the directory [trigger_alarms](trigger_alarms).  
-Here's how to use the automation content available in the directory [trigger_alarms](trigger_alarms).  
+
+There is a SaltStack requirement to use the automation content available in the directory [trigger_alarms](trigger_alarms). You first need to install on the master or on a minion the dependencies to use a SaltStack proxy for Junos. And then you need to start one junos proxy daemon per device. These details are not covered by this documentation.  
+
+Here's how to use the automation content available in the directory [trigger_aarms](trigger_alarms).  
 
 ### generate traffic between 2 routers 
 Add the file [generate_traffic.sls](trigger_alarms/generate_traffic.sls) to the directory ```junos``` of the gitlab repository ```organization/network_model``` (```gitfs_remotes```).  
